@@ -3,3 +3,10 @@ body {
   padding: 0;
   font-family: sans-serif;
 }
+
+.example {
+  max-width: 400px;
+  margin: auto;
+  border: #666;
+  padding: 1rem;
+}
