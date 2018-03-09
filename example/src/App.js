@@ -3,7 +3,7 @@
 import React, { Component } from 'react'
 import ObservableState from 'observable-react-state'
 
-import { Scope, Giver, Need } from 'react-needs'
+import { Scope, Offer, Need, Want } from 'react-needs'
 
 class Counter extends ObservableState<{count: number}> {
   state = {
@@ -21,7 +21,7 @@ export default class App extends Component {
     return (
       <Scope>
         <div className="example">
-          <Need needs="counter,now">
+          <Need values={["counter", "now"]}>
             {(counter, now) => (
               <div>
                 <h2>Injected an Observable Value</h2>
@@ -32,8 +32,9 @@ export default class App extends Component {
               </div>
             )}
           </Need>
-          <Giver name="counter" value={counter} />
-          <Giver name="now" value={Date.now()} />
+          <Want value="missing">{missing => <p>{missing || 'Empty'}</p>}</Want>
+          <Offer name="counter" value={counter} />
+          <Offer name="now" value={Date.now()} />
         </div>
       </Scope>
     )

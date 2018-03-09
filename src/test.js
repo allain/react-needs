@@ -1,11 +1,11 @@
 import React from 'react'
 import RenderError from './lib/RenderError'
-import { Scope, Offer, Need } from './'
 import collect from 'collect-console'
-
 import Enzyme, { mount } from 'enzyme'
 import Adapter from 'enzyme-adapter-react-16'
-import ObservableState from '../example/src/ObservableState'
+import ObservableState from 'observable-react-state'
+
+import { Scope, Offer, Need, Want } from './'
 
 Enzyme.configure({ adapter: new Adapter() })
 
@@ -65,14 +65,49 @@ describe('Need', () => {
     expect(
       mount(
         <Scope>
-          <Need needs="a">{a => <p>{a}</p>}</Need>
+          <Need value="a">{a => <p>{a}</p>}</Need>
           <Offer name="a" value={100} />
         </Scope>
       ).html()
     ).toEqual('<p>100</p>'))
 })
 
-describe('Giver', () => {
+describe('Want', () => {
+  it('exists', () => expect(Want).toBeTruthy())
+
+  it('complains when not in a Scope', () => {
+    const reset = collect.error()
+    expect(
+      mount(
+        <RenderError>
+          <Want />
+        </RenderError>
+      ).html()
+    ).toEqual('<div>no scope found</div>')
+    reset()
+  })
+
+  it('renders even when needs not met', () =>
+    expect(
+      mount(
+        <Scope>
+          <Want needs="a">{a => <br />}</Want>
+        </Scope>
+      ).html()
+    ).toEqual('<br>'))
+
+  it('can access given values', () =>
+    expect(
+      mount(
+        <Scope>
+          <Want value="a">{a => <p>{a}</p>}</Want>
+          <Offer name="a" value={100} />
+        </Scope>
+      ).html()
+    ).toEqual('<p>100</p>'))
+})
+
+describe('Offer', () => {
   it('exists', () => expect(Offer).toBeTruthy())
 
   it('complains when not in a Scope', () => {
@@ -121,7 +156,7 @@ describe('Giver', () => {
     const mounted = mount(
       <Scope>
         <Offer name="a" value={observable} />
-        <Need needs="a">{a => <p>{a.state.count}</p>}</Need>
+        <Need value="a">{a => <p>{a.state.count}</p>}</Need>
       </Scope>
     )
 
