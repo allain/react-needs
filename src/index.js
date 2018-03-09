@@ -22,7 +22,7 @@ export class Scope extends Component<> {
 
 type NeedProps = {
   children: any => Node,
-  values?: Array<string> | string,
+  values?: Array<string>,
   value?: string,
   strict: boolean
 }
@@ -48,7 +48,7 @@ export const Need = ({ children, values, value, strict = true }: NeedProps) => {
 
 type WantProps = {
   children: Node,
-  values?: Array<string> | string,
+  values?: Array<string>,
   value: string
 }
 export const Want = (props: WantProps) => Need({ ...props, strict: false })

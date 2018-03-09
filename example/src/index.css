@@ -9,4 +9,11 @@ body {
   margin: auto;
   border: #666;
   padding: 1rem;
+  color: #333;
+  text-align: center;
+}
+
+.example h2 {
+  color: #333;
+  font-weight: normal;
 }
