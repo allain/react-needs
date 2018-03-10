@@ -33,6 +33,19 @@ describe('Scope', () => {
       ).html()
     ).toEqual('<p>A</p>')
   })
+
+  it('parent scope offers are seen in child scope', () => {
+    expect(
+      mount(
+        <Scope>
+          <Offer name="parent" value={10} />
+          <Scope>
+            <Need value="parent">{p => <p>{p}</p>}</Need>
+          </Scope>
+        </Scope>
+      ).html()
+    ).toEqual('<p>10</p>')
+  })
 })
 
 describe('Need', () => {

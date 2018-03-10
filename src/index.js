@@ -13,10 +13,24 @@ export class Scope extends Component<> {
 
   render() {
     return (
-      <NeedsContext.Provider value={this}>
-        {this.props.children}
-      </NeedsContext.Provider>
+      <NeedsContext.Consumer>
+        {({ registry = {} } = {}) => {
+          return (
+            <NeedsContext.Provider
+              value={{
+                scope: this,
+                registry: { ...registry, ...this.state }
+              }}>
+              {this.props.children}
+            </NeedsContext.Provider>
+          )
+        }}
+      </NeedsContext.Consumer>
     )
+  }
+
+  set(name, value) {
+    this.setState(state => ({ ...state, [name]: value }))
   }
 }
 
@@ -32,10 +46,10 @@ export const Need = ({ children, values, value, strict = true }: NeedProps) => {
 
   return (
     <NeedsContext.Consumer>
-      {scope => {
-        if (!scope) throw new Error('no scope found')
+      {({ registry } = {}) => {
+        if (!registry) throw new Error('no scope found')
 
-        const resolutions = needs.map(need => scope.state[need])
+        const resolutions = needs.map(need => registry[need])
         if (strict && hasUnmetNeeds(resolutions)) return null
 
         return typeof children === 'function'
@@ -66,7 +80,7 @@ type OfferProps = {
 
 export const Offer = ({ name, value }: OfferProps) => (
   <NeedsContext.Consumer>
-    {scope => {
+    {({ scope } = {}) => {
       if (!scope) throw new Error('no scope found')
 
       return <ObservingComponent name={name} value={value} scope={scope} />
