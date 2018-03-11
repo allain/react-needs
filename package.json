@@ -1,6 +1,6 @@
 {
   "name": "react-needs",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Simple dependency injection library for react",
   "author": "Allain Lalonde <allain.lalonde@gmail.com>",
   "license": "ISC",
