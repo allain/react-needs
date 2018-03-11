@@ -130,11 +130,11 @@ class ObservingComponent extends React.Component {
     scope.unset(name)
   }
 
-  observeValue(newValue) {
+  observeValue(observable) {
     const { name, scope } = this.props
 
     this.setState({
-      subscription: newValue.subscribe(newValue =>
+      subscription: observable.subscribe(newValue =>
         // By bypassing scope.set, it doesn't throw an exception
         scope.setState({ [name]: newValue })
       )
