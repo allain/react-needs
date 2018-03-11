@@ -46,6 +46,38 @@ describe('Scope', () => {
       ).html()
     ).toEqual('<p>10</p>')
   })
+
+  it('throws error when two offers in the same scope have the same name', () => {
+    const reset = collect.error()
+    expect(
+      mount(
+        <RenderError>
+          <Scope>
+            <Offer name="a" value={1} />
+            <Offer name="a" value={2} />
+          </Scope>
+        </RenderError>
+      ).html()
+    ).toEqual('<div>offer already made: a</div>')
+    reset()
+  })
+
+  it('supports overriding offers in parent, but leaves them unchanged', () => {
+    expect(
+      mount(
+        <Scope>
+          <div>
+            <Offer name="a" value={1} />
+            <Scope>
+              <Offer name="a" value={2} />
+              <Need value="a">{a => <p>{a}</p>}</Need>
+            </Scope>
+            <Need value="a">{a => <p>{a}</p>}</Need>
+          </div>
+        </Scope>
+      ).html()
+    ).toEqual('<div><p>2</p><p>1</p></div>')
+  })
 })
 
 describe('Need', () => {

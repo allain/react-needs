@@ -19,6 +19,7 @@ export class Scope extends Component<> {
             <NeedsContext.Provider
               value={{
                 scope: this,
+                // combine this scope's and its parents registry
                 registry: { ...registry, ...this.state }
               }}>
               {this.props.children}
@@ -30,7 +31,20 @@ export class Scope extends Component<> {
   }
 
   set(name, value) {
-    this.setState(state => ({ ...state, [name]: value }))
+    this.setState(state => {
+      if (state[name] !== undefined)
+        throw new Error(`offer already made: ${name}`)
+
+      return { ...state, [name]: value }
+    })
+  }
+
+  unset(name) {
+    this.setState(state => {
+      const newState = { ...state }
+      delete newState[name]
+      return newState
+    })
   }
 }
 
@@ -95,21 +109,36 @@ class ObservingComponent extends React.Component {
 
   updateValue(newValue) {
     const { subscription } = this.state
+    const { name, scope } = this.props
 
     if (subscription) subscription.unsubscribe()
 
-    if (newValue) {
-      if (isObservable(newValue)) {
-        this.setState({
-          subscription: newValue.subscribe(newValue =>
-            this.props.scope.setState({ [this.props.name]: newValue })
-          )
-        })
-      }
-      this.props.scope.setState({ [this.props.name]: newValue })
+    if (newValue === undefined) {
+      this.clearValue()
     } else {
-      this.setState({ subscription: null })
+      if (isObservable(newValue)) this.observeValue(newValue)
+
+      scope.set(name, newValue)
     }
+  }
+
+  clearValue() {
+    const { name, scope } = this.props
+
+    this.setState({ subscription: null })
+
+    scope.unset(name)
+  }
+
+  observeValue(newValue) {
+    const { name, scope } = this.props
+
+    this.setState({
+      subscription: newValue.subscribe(newValue =>
+        // By bypassing scope.set, it doesn't throw an exception
+        scope.setState({ [name]: newValue })
+      )
+    })
   }
 
   componentWillReceiveProps({ value }) {
